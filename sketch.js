@@ -33,7 +33,7 @@ function draw() {
   player.show();
   player.move();
   
-  // Handle stars
+  
   for (let i = stars.length - 1; i >= 0; i--) {
     stars[i].fall();
     stars[i].show();
@@ -47,7 +47,7 @@ function draw() {
     }
   }
   
-  // Handle bombs
+  
   for (let i = bombs.length - 1; i >= 0; i--) {
     bombs[i].fall();
     bombs[i].show();
