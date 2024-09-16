@@ -12,7 +12,4 @@ A lightweight game built with pJS, where players catch falling yellow balls. Per
 2. Catch as many balls as you can to increase your score.
 3. Avoid the red balls, or the game will end!
 
-## How to Run Locally
-1. Clone the repository: 
-   ```bash
-   git clone https://github.com/your-username/p5JS_Game.git
+
