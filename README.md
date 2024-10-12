@@ -13,6 +13,8 @@ Bellman Equation in Use
 The Q-learning algorithm is implemented in the game to help the player "learn" the best way to move. The key concept behind Q-learning is the Bellman equation, which is used to update the Q-values based on the agent's experiences.
 
 The Bellman equation helps us evaluate how good an action is in a particular state, considering both the immediate reward and the potential future rewards. The equation used is as follows: 
+
+
 ![Bellman Equation](https://latex.codecogs.com/png.latex?Q(s,a)=Q(s,a)+\alpha\left[r+\gamma\max_{a'}Q(s',a')-Q(s,a)\right])
 
 
