@@ -18,5 +18,46 @@ The Bellman equation helps us evaluate how good an action is in a particular sta
 ![Bellman Equation](https://latex.codecogs.com/png.latex?Q(s,a)=Q(s,a)+\alpha\left[r+\gamma\max_{a'}Q(s',a')-Q(s,a)\right])
 
 
+### Bellman Equation
+
+The Q-learning algorithm uses the Bellman Equation to update the Q-values:
+
+\[
+Q(s, a) = Q(s, a) + \alpha \left[ r + \gamma \max_{a'} Q(s', a') - Q(s, a) \right]
+\]
+
+Where:
+- \( Q(s, a) \) is the Q-value for taking action \( a \) in state \( s \).
+- \( \alpha \) is the learning rate that controls how much of the new information overrides the old information.
+- \( r \) is the reward received after taking action \( a \) in state \( s \).
+- \( \gamma \) is the discount factor, which weighs the importance of future rewards.
+- \( \max_{a'} Q(s', a') \) is the maximum predicted future reward for the next state \( s' \).
+
+### State Representation
+
+In this game, the player's state includes:
+- The player’s position.
+- The positions of the falling stars and bombs.
+- The current score.
+
+### Reward Function
+
+The reward function is defined as:
+- Positive rewards for collecting yellow stars.
+- A large negative reward for being hit by a red bomb.
+
+### Exploration vs. Exploitation
+
+The agent uses an epsilon-greedy strategy to balance between:
+
+- **Exploration**: Taking random actions to discover new strategies.
+- **Exploitation**: Taking the best-known action to maximize the reward based on current Q-values.
+
+### Q-table
+
+The agent stores its learned values in a Q-table. This table is updated every time the agent takes an action and receives a reward or penalty. Over time, the Q-table improves the agent's decision-making abilities.
+
+
+
 
 
