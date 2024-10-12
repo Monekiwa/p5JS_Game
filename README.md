@@ -18,14 +18,6 @@ The Bellman equation helps us evaluate how good an action is in a particular sta
 ![Bellman Equation](https://latex.codecogs.com/png.latex?Q(s,a)=Q(s,a)+\alpha\left[r+\gamma\max_{a'}Q(s',a')-Q(s,a)\right])
 
 
-### Bellman Equation
-
-The Q-learning algorithm uses the Bellman Equation to update the Q-values:
-
-\[
-Q(s, a) = Q(s, a) + \alpha \left[ r + \gamma \max_{a'} Q(s', a') - Q(s, a) \right]
-\]
-
 Where:
 - \( Q(s, a) \) is the Q-value for taking action \( a \) in state \( s \).
 - \( \alpha \) is the learning rate that controls how much of the new information overrides the old information.
