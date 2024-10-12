@@ -7,20 +7,25 @@ let playerSize = 50;
 let starSize = 20;
 let bombSize = 25;
 
+// Q-learning variables
+let Q = {}; // Q-table to store state-action values
+let epsilon = 1.0; 
+let alpha = 0.9;
+let gamma = 0.5; 
+let intervalId;
+
+// Setup game environment
 function setup() {
   createCanvas(600, 400);
-  player = new Player();
-  for (let i = 0; i < 5; i++) {
-    stars.push(new Star());
-  }
-  for (let i = 0; i < 2; i++) {
-    bombs.push(new Bomb());
-  }
+  resetGame();
+  frameRate(30);
+  intervalId = setInterval(gameLoop, 100);  // Run game loop every 100ms
 }
 
 function draw() {
   background(0);
   if (gameOver) {
+    clearInterval(intervalId);
     textSize(32);
     fill(255, 0, 0);
     textAlign(CENTER);
@@ -29,16 +34,15 @@ function draw() {
     text("Final Score: " + score, width / 2, height / 2 + 40);
     return;
   }
-  
+
   player.show();
   player.move();
-  
-  
+
   for (let i = stars.length - 1; i >= 0; i--) {
     stars[i].fall();
     stars[i].show();
     if (stars[i].hits(player)) {
-      score++;
+      score += 10; // Increase score for collecting a star
       stars.splice(i, 1);
       stars.push(new Star());
     } else if (stars[i].offScreen()) {
@@ -46,8 +50,7 @@ function draw() {
       stars.push(new Star());
     }
   }
-  
-  
+
   for (let i = bombs.length - 1; i >= 0; i--) {
     bombs[i].fall();
     bombs[i].show();
@@ -81,11 +84,12 @@ class Player {
   }
 
   move() {
-    this.x += this.xdir * 5;
+    this.x += this.xdir * 5; 
     this.x = constrain(this.x, 0, width - playerSize);
   }
 }
 
+// Star class
 class Star {
   constructor() {
     this.x = random(width);
@@ -94,7 +98,7 @@ class Star {
   }
 
   show() {
-    fill(255, 255, 0);
+    fill(255, 255, 0); // Yellow star
     ellipse(this.x, this.y, starSize, starSize);
   }
 
@@ -111,6 +115,7 @@ class Star {
   }
 }
 
+// Bomb class
 class Bomb {
   constructor() {
     this.x = random(width);
@@ -136,14 +141,104 @@ class Bomb {
   }
 }
 
-function keyPressed() {
-  if (keyCode === RIGHT_ARROW) {
-    player.setDir(1);
-  } else if (keyCode === LEFT_ARROW) {
-    player.setDir(-1);
+// Q-learning functions
+function getState() {
+  let nearestStar = getNearestObject(stars);
+  let nearestBomb = getNearestObject(bombs);
+
+  return {
+    playerX: Math.floor(player.x / 50), 
+    nearestStarX: Math.floor(nearestStar.x / 50),
+    nearestStarY: Math.floor(nearestStar.y / 50),
+    nearestBombX: Math.floor(nearestBomb.x / 50),
+    nearestBombY: Math.floor(nearestBomb.y / 50)
+  };
+}
+
+function getNearestObject(objects) {
+  let nearestObject = objects[0];
+  let minDist = dist(player.x, player.y, nearestObject.x, nearestObject.y);
+
+  for (let obj of objects) {
+    let d = dist(player.x, player.y, obj.x, obj.y);
+    if (d < minDist) {
+      minDist = d;
+      nearestObject = obj;
+    }
+  }
+
+  return nearestObject;
+}
+
+function getReward() {
+  if (gameOver) {
+    return -100;  
+  }
+  return score; 
+}
+
+function chooseAction(state) {
+  if (Math.random() < epsilon) {
+    return Math.floor(Math.random() * 3); 
+  } else {
+    let actions = Q[JSON.stringify(state)] || [0, 0, 0]; 
+    return actions.indexOf(Math.max(...actions)); 
   }
 }
 
-function keyReleased() {
-  player.setDir(0);
+function updateQ(state, action, reward, nextState) {
+  let stateKey = JSON.stringify(state);
+  let nextStateKey = JSON.stringify(nextState);
+
+  if (!Q[stateKey]) {
+    Q[stateKey] = [0, 0, 0];  
+  }
+
+  let actions = Q[nextStateKey] || [0, 0, 0]; // Q-values for next state
+  let maxNextQ = Math.max(...actions);  // Best future Q-value
+  Q[stateKey][action] += alpha * (reward + gamma * maxNextQ - Q[stateKey][action]);
+}
+
+// Game loop controlled by Q-learning
+function gameLoop() {
+  let state = getState();
+  let action = chooseAction(state);
+
+  if (action === 0) {
+    player.setDir(-1); 
+  } else if (action === 2) {
+    player.setDir(1); 
+  } else {
+    player.setDir(0); // Stay still
+  }
+
+  draw();
+
+  let reward = getReward();
+  let nextState = getState();
+
+  // Update Q-table
+  updateQ(state, action, reward, nextState);
+
+  if (gameOver) {
+    resetGame();
+  }
+}
+
+function resetGame() {
+  player = new Player();
+  stars = [];
+  bombs = [];
+  score = 0;
+  gameOver = false;
+
+  for (let i = 0; i < 5; i++) {
+    stars.push(new Star());
+  }
+  for (let i = 0; i < 2; i++) {
+    bombs.push(new Bomb());
+  }
+
+  clearInterval(intervalId);
+  intervalId = setInterval(gameLoop, 100);  
 }
