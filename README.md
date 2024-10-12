@@ -103,5 +103,7 @@ s
 ′
  .
 
+![Bellman Equation](https://latex.codecogs.com/png.latex?Q(s,a)=Q(s,a)+\alpha\left[r+\gamma\max_{a'}Q(s',a')-Q(s,a)\right])
+
 
 
